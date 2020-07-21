@@ -1,0 +1,41 @@
+clc; clear; close all;
+
+% extended kalman filter
+% nonlinear model,but s.t. gauss distribution
+% x(k) = sin(3*sin(k-1))
+% y(k) = x(k)^2, 注意似然概率是多峰分布，具有强烈的非线性。当y=4时，x=2 or -2.
+
+% generate signal data
+t = 1;10;
+n = length(t);
+X = zeros(2, 1); % [p; v]
+
+std = 1;
+y = sin(t) + randn(1,10)*std; % measurement
+
+P = [0, 0; 0, 0];
+
+% EKF
+Q = [0.01,0; 0, 0.00001];
+R = std^2;
+
+figure; 
+hold on; grid on;
+for i=1:n
+    
+   % predict
+   A = [1, 1; -1, 1];    % jacobi, deltaF / deltaX
+   X = X + [X(2); -X(1)]*1;
+   P = A * P * A' + Q;
+   
+   % udpate
+   C = [1, 0]; % jacobi, deltaH / deltaX
+   K = P * C' * inv(C * P * C' + R);
+   X = X + K * (y(i) - X(1));
+   P = (eye(1) - K*C) * P;
+   disp(X)
+   plot(i, X(1), '.k');
+end
+xlabel('t');
+ylabel('p');
+
