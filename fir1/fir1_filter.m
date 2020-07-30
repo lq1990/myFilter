@@ -13,7 +13,7 @@ for i=1:SIZE
 end
 
 %%
-blo = fir1(order, cutoff / (sampleFreq/2), 'low',rectwin(order + 1));
+blo = fir1(order, cutoff / (sampleFreq/2), 'low',rectwin(order + 1);
 figure;
 freqz(blo); title('blo')
 out = filter(blo, 1, data); % (coef of data, coef of output, data)
